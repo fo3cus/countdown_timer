@@ -103,11 +103,11 @@ root.bind('<F3>', alarm)
 root.bind('<Button-3>', popup)
 
 # --INITIALISE THE ALARM SOUND-- #
-pygame.mixer.pre_init(44100, -16, 2, 2048)
-pygame.mixer.init()
-pygame.init()
-pygame.mixer.music.load("tng_red_alert3.mp3")
-pygame.mixer.music.set_volume(10.0)
+# pygame.mixer.pre_init(44100, -16, 2, 2048)
+# pygame.mixer.init()
+# pygame.init()
+# pygame.mixer.music.load("tng_red_alert3.mp3")
+# pygame.mixer.music.set_volume(10.0)
 
 # --SETUP COUNTER DISPLAY-- #
 fnt = font.Font(family='Helvetica', size=300, weight='bold')

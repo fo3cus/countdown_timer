@@ -1,14 +1,20 @@
 #!/usr/bin/python3
 
-# --IMPORTS-- #
+# Import modules
 from tkinter import Tk, ttk, font, StringVar, Menu, Toplevel, Spinbox, Button
 import pygame
 import configparser
+import os
+import sys
 
+# Constant reference to file including path
+SETTINGS_FILE = os.path.join(sys.path[0], "settings.ini")
+
+# Load the file into config object
 config = configparser.ConfigParser()
-config.read("settings.ini")
+config.read(SETTINGS_FILE)
 
-# --VARIABLES-- #
+# Define variables
 iMin = int(config['SETTINGS']['minutes'])
 iSec = int(config['SETTINGS']['seconds'])
 iTotal = str(iMin) + ":" + str(iSec)
@@ -16,22 +22,18 @@ wMin = iMin
 wSec = iSec
 working = 0
 
-
-# --FUNCTIONS-- #
-def go_stop():  # START OR STOP TIMER
-    # global wMin
-    # global wSec
+# Start/stop timer
+def go_stop():
     global working
 
     if working == 1:
         working = 0
-
     else:
         working = 1
         root.after(1000, run_timer)
 
-
-def reset():  # RESET TIMER AND UPDATE DISPLAY
+# Reset timer and update display
+def reset():
     global wMin
     global wSec
     global working
@@ -43,12 +45,12 @@ def reset():  # RESET TIMER AND UPDATE DISPLAY
         txt.set(iTotal)
         # root.after(1000, run_timer)
 
-
-def quit_all():  # CLOSE ALL WINDOWS
+# Close all windows
+def quit_all():
     root.destroy()
 
-
-def run_timer():  # RUN MAIN TIMER AND UPDATE DISPLAY
+# Run main timer and update display
+def run_timer():
     global wMin
     global wSec
     global working
@@ -58,26 +60,24 @@ def run_timer():  # RUN MAIN TIMER AND UPDATE DISPLAY
             txt.set("00:00")
             working = 0
             flash()
-#            alarm()
+            # alarm()
         else:
             txt.set("%02d:%02d" % (wMin, wSec))
-
             if wSec == 0:
                 wMin -= 1
                 wSec = 59
             else:
                 wSec -= 1
-
             root.after(1000, run_timer)
     else:
         return
 
-
-def alarm():  # PLAY ALARM SOUND
+# Play the alarm sound
+def alarm():
     pygame.mixer.music.play()
 
-
-def flash():  # FLASH DISPLAY NUMBERS ON REACHING ZERO
+# Flasg displayed numbers
+def flash():
     if working == 0:
         current_colour = str(lbl.cget("foreground"))
         if current_colour == "white":
@@ -90,11 +90,11 @@ def flash():  # FLASH DISPLAY NUMBERS ON REACHING ZERO
         lbl.configure(foreground="white")
         return
 
-
-def popup(event):  # POPUP MENU ON RIGHT CLICK
+# Popup menu on right-click
+def popup(event):
     menu.tk_popup(event.x_root, event.y_root)
 
-
+# Configure settings
 def settings():
     global working
 
@@ -106,21 +106,32 @@ def settings():
     my_font2 = font.Font(family="Helvetica", size=18, weight="bold")
 
     cfg = configparser.ConfigParser()
-    cfg.read("settings.ini")
+    cfg.read(SETTINGS_FILE)
 
-    # VARIABLES
+    # Variables
     minute_value = StringVar(win)
     minute_value.set(cfg['SETTINGS']['minutes'])
     second_value = StringVar(win)
     second_value.set(cfg['SETTINGS']['seconds'])
 
     def save():
-        config_file = open('settings.ini', 'w')
+        global iMin
+        global iSec
+        global iTotal
+
+        config_file = open(SETTINGS_FILE, 'w')
         cfg.set('SETTINGS', 'minutes', spin_minutes.get())
         cfg.set('SETTINGS', 'seconds', spin_seconds.get())
         cfg.write(config_file)
         config_file.close()
+
+        iMin = int(spin_minutes.get())
+        iSec = int(spin_seconds.get())
+        iTotal = str(iMin) + ":" + str(iSec)
+
         win.destroy()
+
+        reset()
 
     def close():
         win.destroy()  # Close the GUI
@@ -153,11 +164,11 @@ root.bind('<F3>', alarm)
 root.bind('<Button-3>', popup)
 
 # --INITIALISE THE ALARM SOUND-- #
-pygame.mixer.pre_init(44100, -16, 2, 2048)
-pygame.mixer.init()
-pygame.init()
-pygame.mixer.music.load("tng_red_alert3.mp3")
-pygame.mixer.music.set_volume(10.0)
+# pygame.mixer.pre_init(44100, -16, 2, 2048)
+# pygame.mixer.init()
+# pygame.init()
+# pygame.mixer.music.load("tng_red_alert3.mp3")
+# pygame.mixer.music.set_volume(10.0)
 
 # --SETUP COUNTER DISPLAY-- #
 fnt = font.Font(family='Helvetica', size=300, weight='bold')
