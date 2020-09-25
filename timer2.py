@@ -1,11 +1,16 @@
 #!/usr/bin/python3
 
 # Import modules
-from tkinter import Tk, ttk, font, StringVar, Menu, Toplevel, Spinbox, Button
+from tkinter import Tk, font, StringVar, Menu, Toplevel, Spinbox, Button
+import tkinter.ttk as ttk
+from ttkthemes import ThemedStyle
+
 import pygame
 import configparser
 import os
 import sys
+import time
+
 
 # Constant reference to file including path
 SETTINGS_FILE = os.path.join(sys.path[0], "settings.ini")
@@ -72,6 +77,7 @@ def run_timer():
     else:
         return
 
+
 # Play the alarm sound
 def alarm():
     pygame.mixer.music.play()
@@ -137,16 +143,20 @@ def settings():
         win.destroy()  # Close the GUI
 
     # WIDGETS#
-    spin_minutes = Spinbox(win, from_=0, to=59, textvariable=minute_value, width=3, font=my_font2, state='readonly')
+    # spin_minutes = Spinbox(win, from_=0, to=59, textvariable=minute_value, width=3, font=my_font2, state='readonly')
+    spin_minutes = ttk.Spinbox(win, from_=0, to=59, textvariable=minute_value, width=3, font=my_font2, state='readonly')
     spin_minutes.grid(row=0, column=0, padx=15, pady=15)
 
-    spin_seconds = Spinbox(win, from_=0, to=59, textvariable=second_value, width=3, font=my_font2, state='readonly')
+    # spin_seconds = Spinbox(win, from_=0, to=59, textvariable=second_value, width=3, font=my_font2, state='readonly')
+    spin_seconds = ttk.Spinbox(win, from_=0, to=59, textvariable=second_value, width=3, font=my_font2, state='readonly')
     spin_seconds.grid(row=0, column=1, padx=15, pady=15)
 
-    win.save_button = Button(win, text="Save", font=my_font1, command=save, height=1, width=5)
+    # win.save_button = Button(win, text="Save", font=my_font1, command=save, height=1, width=5)
+    win.save_button = ttk.Button(win, text="Save", command=save, width=5)
     win.save_button.grid(row=1, column=0, padx=15, pady=15)
 
-    win.close_button = Button(win, text="Close", font=my_font1, command=close, height=1, width=5)
+    # win.close_button = Button(win, text="Close", font=my_font1, command=close, height=1, width=5)
+    win.close_button = ttk.Button(win, text="Close", command=close, width=5)
     win.close_button.grid(row=1, column=1, padx=15, pady=15)
 
     win.mainloop()
@@ -156,12 +166,14 @@ def settings():
 root = Tk()
 root.attributes("-fullscreen", True)
 root.configure(background='black')
-root.config(cursor="none")  # HIDE THE MOUSE CURSOR
+# root.config(cursor="none")  # HIDE THE MOUSE CURSOR
 root.bind('<x>', quit_all)
 root.bind('<F1>', go_stop)
 root.bind('<F2>', reset)
 root.bind('<F3>', alarm)
 root.bind('<Button-3>', popup)
+style = ThemedStyle(root)
+style.set_theme("equilux")
 
 # --INITIALISE THE ALARM SOUND-- #
 # pygame.mixer.pre_init(44100, -16, 2, 2048)
