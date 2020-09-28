@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 
-# Import modules
-from tkinter import Tk, font, StringVar, Menu, Toplevel, Spinbox, Button
-import tkinter.ttk as ttk
-from ttkthemes import ThemedStyle
+# TODO: add my details and docstrings etc
 
+# Import modules
+from tkinter import Tk, font, ttk, StringVar, Menu, Toplevel, Spinbox, Button
 import pygame
 import configparser
 import os
@@ -15,55 +14,64 @@ import time
 # Constant reference to file including path
 SETTINGS_FILE = os.path.join(sys.path[0], "settings.ini")
 
+
 # Load the file into config object
 config = configparser.ConfigParser()
 config.read(SETTINGS_FILE)
 
+
+# TODO: this could be a class?
 # Define variables
 iMin = int(config['SETTINGS']['minutes'])
 iSec = int(config['SETTINGS']['seconds'])
-iTotal = str(iMin) + ":" + str(iSec)
+iTotal = str(f'{iMin:02}') + ":" + str(f'{iSec:02}') # Format loaded numbers with leading zeroes
 wMin = iMin
 wSec = iSec
 working = 0
 
+
 # Start/stop timer
-def go_stop():
+def go_stop(*args):
     global working
 
     if working == 1:
         working = 0
     else:
         working = 1
-        root.after(1000, run_timer)
+        root.after(500, run_timer)  # Queue function to execute after 0.5 seconds
 
-# Reset timer and update display
-def reset():
+
+# Reset timer and update display, only works if currently stopped
+def reset(*args):
+    # Pull in global variables so they can be changed locally
     global wMin
     global wSec
     global working
 
+    if working==1 and wMin==0 and wSec==0:
+        working = 0
+
     if working == 0:
-        # working = 1
         wMin = iMin
         wSec = iSec
         txt.set(iTotal)
-        # root.after(1000, run_timer)
+
 
 # Close all windows
-def quit_all():
+def quit_all(*args):
     root.destroy()
+
 
 # Run main timer and update display
 def run_timer():
+    # Pull in global variables so they can be changed locally
     global wMin
     global wSec
     global working
 
     if working == 1:
-        if (wMin == 0) and (wSec == 0):
+        if wMin==0 and wSec==0:
             txt.set("00:00")
-            working = 0
             flash()
             # alarm()
         else:
@@ -82,9 +90,10 @@ def run_timer():
 def alarm():
     pygame.mixer.music.play()
 
-# Flasg displayed numbers
+
+# Flash displayed numbers
 def flash():
-    if working == 0:
+    if working == 1:
         current_colour = str(lbl.cget("foreground"))
         if current_colour == "white":
             next_colour = "grey"
@@ -96,20 +105,26 @@ def flash():
         lbl.configure(foreground="white")
         return
 
+
 # Popup menu on right-click
 def popup(event):
     menu.tk_popup(event.x_root, event.y_root)
 
-# Configure settings
+
+# TODO: this could be a class?
+# Configure settings window
 def settings():
     global working
 
     working = 0
 
     win = Toplevel()
-    win.title("Timer Settings")
-    my_font1 = font.Font(family="Helvetica", size=14, weight="bold")
+    win.title("Settings")
+    win.config(bg="black", bd="1", relief="flat")
+    win.resizable(height=False, width=False)
+    my_font1 = font.Font(family="Helvetica", size=12, weight="normal")
     my_font2 = font.Font(family="Helvetica", size=18, weight="bold")
+
 
     cfg = configparser.ConfigParser()
     cfg.read(SETTINGS_FILE)
@@ -125,15 +140,23 @@ def settings():
         global iSec
         global iTotal
 
+        if spin_minutes.get() == '':
+            iMin = 0
+        else:
+            iMin = int(spin_minutes.get())
+
+        if spin_seconds.get() == '':
+            iSec = 0
+        else:
+            iSec = int(spin_seconds.get())
+
         config_file = open(SETTINGS_FILE, 'w')
-        cfg.set('SETTINGS', 'minutes', spin_minutes.get())
-        cfg.set('SETTINGS', 'seconds', spin_seconds.get())
+        cfg.set('SETTINGS', 'minutes', str(iMin))
+        cfg.set('SETTINGS', 'seconds', str(iSec))
         cfg.write(config_file)
         config_file.close()
 
-        iMin = int(spin_minutes.get())
-        iSec = int(spin_seconds.get())
-        iTotal = str(iMin) + ":" + str(iSec)
+        iTotal = str(f'{iMin:02}') + ":" + str(f'{iSec:02}')
 
         win.destroy()
 
@@ -142,56 +165,123 @@ def settings():
     def close():
         win.destroy()  # Close the GUI
 
-    # WIDGETS#
-    # spin_minutes = Spinbox(win, from_=0, to=59, textvariable=minute_value, width=3, font=my_font2, state='readonly')
-    spin_minutes = ttk.Spinbox(win, from_=0, to=59, textvariable=minute_value, width=3, font=my_font2, state='readonly')
-    spin_minutes.grid(row=0, column=0, padx=15, pady=15)
 
-    # spin_seconds = Spinbox(win, from_=0, to=59, textvariable=second_value, width=3, font=my_font2, state='readonly')
-    spin_seconds = ttk.Spinbox(win, from_=0, to=59, textvariable=second_value, width=3, font=my_font2, state='readonly')
-    spin_seconds.grid(row=0, column=1, padx=15, pady=15)
+    # Validate input and disallow anything but numbers and empty
+    def validate_numbers(P, s):
+        # print(P)  # Used for debugging
+        if P.isdigit():  # Does the string evaluate to a number?
+            if int(P) > 59:  # Is the number greater than 59
+                win.bell()
+                return False  # Disallow
+            return True  # Allow
+        elif P=='':
+            return True
+        else:
+            win.bell()  # Error sound
+            return False
 
-    # win.save_button = Button(win, text="Save", font=my_font1, command=save, height=1, width=5)
-    win.save_button = ttk.Button(win, text="Save", command=save, width=5)
-    win.save_button.grid(row=1, column=0, padx=15, pady=15)
+    # Widgets
+    spinput = win.register(validate_numbers)
+    spin_minutes = Spinbox(
+            win,  # Window element is assigned to
+            validate="key",  # Validate on key press
+            validatecommand=(spinput, "%P", "%s"),  # Execute this command to validate
+            from_=0,  # Minimum value when using arrows
+            to=59,  # Maximum value when using arrows
+            textvariable=minute_value,  # Set initial value
+            bg="black",  # Background colour
+            relief="flat",  # Border design
+            fg="white",  # Text colour
+            bd=1,  # Border width in pixels
+            width=3,  # Width of spinbox entry in characters
+            font=my_font2,  # Font for text
+            justify="center"  # Alignment of text in element
+        )
+    spin_minutes.grid(row=0, column=0, padx=10, pady=10)  # Layout in window
 
-    # win.close_button = Button(win, text="Close", font=my_font1, command=close, height=1, width=5)
-    win.close_button = ttk.Button(win, text="Close", command=close, width=5)
-    win.close_button.grid(row=1, column=1, padx=15, pady=15)
+    spin_seconds = Spinbox(
+            win,
+            validate="key",
+            validatecommand=(spinput, "%P", "%s"),
+            from_=0,
+            to=59,
+            textvariable=second_value,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=3,
+            font=my_font2,
+            justify="center"
+        )
+    spin_seconds.grid(row=0, column=1, padx=10, pady=10)
+
+    win.save_button = Button(
+            win,
+            text="Save",
+            command=save,
+            font=my_font1,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=5,
+            justify="center",
+            padx=5,
+            pady=5
+        )
+    win.save_button.grid(row=1, column=0, padx=10, pady=10)
+
+    win.close_button = Button(
+            win,
+            text="Close",
+            command=close,
+            font=my_font1,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=5,
+            justify="center",
+            padx=5,
+            pady=5
+        )
+    win.close_button.grid(row=1, column=1, padx=10, pady=10)
 
     win.mainloop()
 
 
-# --CREATE MAIN DISPLAY-- #
+# Create main display
 root = Tk()
 root.attributes("-fullscreen", True)
 root.configure(background='black')
-# root.config(cursor="none")  # HIDE THE MOUSE CURSOR
+# root.config(cursor="none")  # Hide the mouse cursor
 root.bind('<x>', quit_all)
 root.bind('<F1>', go_stop)
 root.bind('<F2>', reset)
 root.bind('<F3>', alarm)
 root.bind('<Button-3>', popup)
-style = ThemedStyle(root)
-style.set_theme("equilux")
 
-# --INITIALISE THE ALARM SOUND-- #
+
+# # Initialise the alarm sound
 # pygame.mixer.pre_init(44100, -16, 2, 2048)
 # pygame.mixer.init()
-# pygame.init()
 # pygame.mixer.music.load("tng_red_alert3.mp3")
 # pygame.mixer.music.set_volume(10.0)
 
-# --SETUP COUNTER DISPLAY-- #
+
+# Set up counter display
 fnt = font.Font(family='Helvetica', size=300, weight='bold')
 txt = StringVar()
 lbl = ttk.Label(root, textvariable=txt, font=fnt, foreground="white", background="black")
 txt.set(iTotal)
 lbl.place(relx=0.5, rely=0.5, anchor="center")
 
-# --MENU-- #
+
+# Menu
 menu_pop = Menu(root)
 menu = Menu(menu_pop, tearoff=0)
+menu.config(bg="black", fg="white", relief="raised")
 menu.add_command(label="Start/Stop", accelerator="F1", command=go_stop)
 menu.add_command(label="Reset", accelerator="F2", command=reset)
 menu.add_separator()
@@ -200,5 +290,6 @@ menu.add_separator()
 menu.add_command(label="Exit", accelerator="X", command=quit_all)
 menu_pop.add_cascade(label="File", menu=menu)
 
-# --START MAIN LOOP-- #
+
+# Start main loop
 root.mainloop()
