@@ -14,45 +14,46 @@ import time
 # Constant reference to file including path
 SETTINGS_FILE = os.path.join(sys.path[0], "settings.ini")
 
+
 class Timer(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
 
         self.parent.attributes("-fullscreen", True)
-        self.parent.configure(background='black')
+        self.parent.configure(background="black")
 
         self.config = configparser.ConfigParser()
         self.config.read(SETTINGS_FILE)
 
-        self.iMin = int(self.config['SETTINGS']['minutes'])
-        self.iSec = int(self.config['SETTINGS']['seconds'])
-        self.iTotal = str(f'{self.iMin:02}') + ":" + str(f'{self.iSec:02}') # Format loaded numbers with leading zeroes
+        self.iMin = int(self.config["SETTINGS"]["minutes"])
+        self.iSec = int(self.config["SETTINGS"]["seconds"])
+        self.iTotal = str(f"{self.iMin:02}") + ":" + str(f"{self.iSec:02}")  # Format loaded numbers with leading zeroes
         self.wMin = self.iMin
         self.wSec = self.iSec
         self.working = 0
 
-        self.fnt = font.Font(family='Helvetica', size=300, weight='bold')
+        self.fnt = font.Font(family="Helvetica", size=300, weight="bold")
         self.txt = tk.StringVar()
         self.lbl = ttk.Label(root, textvariable=self.txt, font=self.fnt, foreground="white", background="black")
         self.txt.set(self.iTotal)
         self.lbl.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.parent.bind('<x>', self.quit_all)
-        self.parent.bind('<F1>', self.go_stop)
-        self.parent.bind('<F2>', self.reset)
-        self.parent.bind('<F3>', self.alarm)
-        self.parent.bind('<Button-3>', self.popup)
+        self.parent.bind("<x>", self.quit_all)
+        self.parent.bind("<F1>", self.go_stop)
+        self.parent.bind("<F2>", self.reset)
+        self.parent.bind("<F3>", self.alarm)
+        self.parent.bind("<Button-3>", self.popup)
 
         self.menu_pop = tk.Menu(self.parent)
         self.menu = tk.Menu(self.menu_pop, tearoff=0)
         self.menu.config(bg="black", fg="white", relief="raised")
-        self.menu.add_command(label="Start/Stop", accelerator="F1", command=self.go_stop)
-        self.menu.add_command(label="Reset", accelerator="F2", command=self.reset)
+        self.menu.add_command(label="Start/Stop", accelerator="F1", command=self.go_stop, font="Helvetica 16 bold")
+        self.menu.add_command(label="Reset", accelerator="F2", command=self.reset, font="Helvetica 16 bold")
         self.menu.add_separator()
-        self.menu.add_command(label="Settings", command=self.settings)
+        self.menu.add_command(label="Settings", command=self.settings, font="Helvetica 16 bold")
         self.menu.add_separator()
-        self.menu.add_command(label="Exit", accelerator="X", command=self.quit_all)
+        self.menu.add_command(label="Exit", accelerator="X", command=self.quit_all, font="Helvetica 16 bold")
         self.menu_pop.add_cascade(label="File", menu=self.menu)
 
     def go_stop(self, *args):
@@ -63,7 +64,7 @@ class Timer(tk.Frame):
             self.parent.after(500, self.run_timer)
 
     def reset(self, *args):
-        if self.working==1 and self.wMin==0 and self.wSec==0:
+        if self.working == 1 and self.wMin == 0 and self.wSec == 0:
             self.working = 0
         if self.working == 0:
             self.wMin = self.iMin
@@ -75,7 +76,7 @@ class Timer(tk.Frame):
 
     def run_timer(self):
         if self.working == 1:
-            if self.wMin==0 and self.wSec==0:
+            if self.wMin == 0 and self.wSec == 0:
                 self.txt.set("00:00")
                 self.flash()
             else:
@@ -124,40 +125,94 @@ class Settings(tk.Toplevel):
         self.parent.title("Settings")
         self.parent.config(bg="black", bd="1", relief="flat")
         self.parent.resizable(height=False, width=False)
-        self.my_font1 = font.Font(family="Helvetica", size=12, weight="normal")
-        self.my_font2 = font.Font(family="Helvetica", size=18, weight="bold")
+        self.my_font1 = font.Font(family="Helvetica", size=16, weight="normal")
+        self.my_font2 = font.Font(family="Helvetica", size=20, weight="bold")
         self.cfg = configparser.ConfigParser()
         self.cfg.read(SETTINGS_FILE)
         self.minute_value = tk.StringVar(self.parent)
-        self.minute_value.set(self.cfg['SETTINGS']['minutes'])
+        self.minute_value.set(self.cfg["SETTINGS"]["minutes"])
         self.second_value = tk.StringVar(self.parent)
-        self.second_value.set(self.cfg['SETTINGS']['seconds'])
+        self.second_value.set(self.cfg["SETTINGS"]["seconds"])
         self.spinput = self.parent.register(self.validate_numbers)
-        self.spin_minutes = tk.Spinbox(self.parent,validate="key",validatecommand=(self.spinput, "%P", "%s"),from_=0,to=59,textvariable=self.minute_value,bg="black",relief="flat",fg="white",bd=1,width=3,font=self.my_font2,justify="center")
+        self.spin_minutes = tk.Spinbox(
+            self.parent,
+            validate="key",
+            validatecommand=(self.spinput, "%P", "%s"),
+            from_=0,
+            to=59,
+            textvariable=self.minute_value,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=3,
+            font=self.my_font2,
+            justify="center",
+        )
         self.spin_minutes.grid(row=0, column=0, padx=10, pady=10)
-        self.spin_seconds = tk.Spinbox(self.parent,validate="key",validatecommand=(self.spinput, "%P", "%s"),from_=0,to=59,textvariable=self.second_value,bg="black",relief="flat",fg="white",bd=1,width=3,font=self.my_font2,justify="center")
+        self.spin_seconds = tk.Spinbox(
+            self.parent,
+            validate="key",
+            validatecommand=(self.spinput, "%P", "%s"),
+            from_=0,
+            to=59,
+            textvariable=self.second_value,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=3,
+            font=self.my_font2,
+            justify="center",
+        )
         self.spin_seconds.grid(row=0, column=1, padx=10, pady=10)
-        self.parent.save_button = tk.Button(self.parent,text="Save",command=self.save,font=self.my_font1,bg="black",relief="flat",fg="white",bd=1,width=5,justify="center",padx=5,pady=5)
+        self.parent.save_button = tk.Button(
+            self.parent,
+            text="Save",
+            command=self.save,
+            font=self.my_font1,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=5,
+            justify="center",
+            padx=5,
+            pady=5,
+        )
         self.parent.save_button.grid(row=1, column=0, padx=10, pady=10)
-        self.parent.close_button = tk.Button(self.parent,text="Close",command=self.close,font=self.my_font1,bg="black",relief="flat",fg="white",bd=1,width=5,justify="center",padx=5,pady=5)
+        self.parent.close_button = tk.Button(
+            self.parent,
+            text="Close",
+            command=self.close,
+            font=self.my_font1,
+            bg="black",
+            relief="flat",
+            fg="white",
+            bd=1,
+            width=5,
+            justify="center",
+            padx=5,
+            pady=5,
+        )
         self.parent.close_button.grid(row=1, column=1, padx=10, pady=10)
 
     def save(self):
-        if self.spin_minutes.get() == '':
+        if self.spin_minutes.get() == "":
             self.iMin = 0
         else:
             self.iMin = int(self.spin_minutes.get())
 
-        if self.spin_seconds.get() == '':
+        if self.spin_seconds.get() == "":
             self.iSec = 0
         else:
             self.iSec = int(self.spin_seconds.get())
-        self.config_file = open(SETTINGS_FILE, 'w')
-        self.cfg.set('SETTINGS', 'minutes', str(self.iMin))
-        self.cfg.set('SETTINGS', 'seconds', str(self.iSec))
+        self.config_file = open(SETTINGS_FILE, "w")
+        self.cfg.set("SETTINGS", "minutes", str(self.iMin))
+        self.cfg.set("SETTINGS", "seconds", str(self.iSec))
         self.cfg.write(self.config_file)
         self.config_file.close()
-        self.iTotal = str(f'{self.iMin:02}') + ":" + str(f'{self.iSec:02}')
+        self.iTotal = str(f"{self.iMin:02}") + ":" + str(f"{self.iSec:02}")
         self.close()
         Timer(root).reset()
 
@@ -170,11 +225,12 @@ class Settings(tk.Toplevel):
                 self.parent.bell()
                 return False
             return True
-        elif P=='':
+        elif P == "":
             return True
         else:
             self.parent.bell()
             return False
+
 
 if __name__ == "__main__":
     root = tk.Tk()
