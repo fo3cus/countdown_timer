@@ -10,25 +10,16 @@
 hs_err_pid*
 
 ##############################
-## IntelliJ
-##############################
-out/
-.idea/
-.idea_modules/
-*.iml
-*.ipr
-*.iws
-
-##############################
 ## Visual Studio Code
 ##############################
-.vscode/
+.vscode
 .venv
 venv
+__pycache__
+.pytest_cache
 ##############################
 ## CUSTOM
 ##############################
-
-
 .fake
 .ionide
+
