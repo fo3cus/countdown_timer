@@ -22,12 +22,18 @@ config.read(SETTINGS_FILE)
 
 # TODO: this could be a class?
 # Define variables
-iMin = int(config['SETTINGS']['minutes'])
-iSec = int(config['SETTINGS']['seconds'])
-iTotal = str(f'{iMin:02}') + ":" + str(f'{iSec:02}') # Format loaded numbers with leading zeroes
+iMin = int(config["SETTINGS"]["minutes"])
+iSec = int(config["SETTINGS"]["seconds"])
+iTotal = str(f"{iMin:02}") + ":" + str(f"{iSec:02}")  # Format loaded numbers with leading zeroes
 wMin = iMin
 wSec = iSec
 working = 0
+
+# Initialise the alarm sound
+pygame.mixer.pre_init(44100, -16, 2, 2048)
+pygame.mixer.init()
+pygame.mixer.music.set_volume(10.0)
+alert = pygame.mixer.Sound("alert.wav")
 
 
 # Start/stop timer
@@ -48,7 +54,7 @@ def reset(*args):
     global wSec
     global working
 
-    if working==1 and wMin==0 and wSec==0:
+    if working == 1 and wMin == 0 and wSec == 0:
         working = 0
 
     if working == 0:
@@ -70,10 +76,10 @@ def run_timer():
     global working
 
     if working == 1:
-        if wMin==0 and wSec==0:
+        if wMin == 0 and wSec == 0:
             txt.set("00:00")
             flash()
-            # alarm()
+            alarm()
         else:
             txt.set("%02d:%02d" % (wMin, wSec))
             if wSec == 0:
@@ -88,7 +94,7 @@ def run_timer():
 
 # Play the alarm sound
 def alarm():
-    pygame.mixer.music.play()
+    alert.play()
 
 
 # Flash displayed numbers
@@ -125,38 +131,37 @@ def settings():
     my_font1 = font.Font(family="Helvetica", size=12, weight="normal")
     my_font2 = font.Font(family="Helvetica", size=18, weight="bold")
 
-
     cfg = configparser.ConfigParser()
     cfg.read(SETTINGS_FILE)
 
     # Variables
     minute_value = StringVar(win)
-    minute_value.set(cfg['SETTINGS']['minutes'])
+    minute_value.set(cfg["SETTINGS"]["minutes"])
     second_value = StringVar(win)
-    second_value.set(cfg['SETTINGS']['seconds'])
+    second_value.set(cfg["SETTINGS"]["seconds"])
 
     def save():
         global iMin
         global iSec
         global iTotal
 
-        if spin_minutes.get() == '':
+        if spin_minutes.get() == "":
             iMin = 0
         else:
             iMin = int(spin_minutes.get())
 
-        if spin_seconds.get() == '':
+        if spin_seconds.get() == "":
             iSec = 0
         else:
             iSec = int(spin_seconds.get())
 
-        config_file = open(SETTINGS_FILE, 'w')
-        cfg.set('SETTINGS', 'minutes', str(iMin))
-        cfg.set('SETTINGS', 'seconds', str(iSec))
+        config_file = open(SETTINGS_FILE, "w")
+        cfg.set("SETTINGS", "minutes", str(iMin))
+        cfg.set("SETTINGS", "seconds", str(iSec))
         cfg.write(config_file)
         config_file.close()
 
-        iTotal = str(f'{iMin:02}') + ":" + str(f'{iSec:02}')
+        iTotal = str(f"{iMin:02}") + ":" + str(f"{iSec:02}")
 
         win.destroy()
 
@@ -164,7 +169,6 @@ def settings():
 
     def close():
         win.destroy()  # Close the GUI
-
 
     # Validate input and disallow anything but numbers and empty
     def validate_numbers(P, s):
@@ -174,7 +178,7 @@ def settings():
                 win.bell()
                 return False  # Disallow
             return True  # Allow
-        elif P=='':
+        elif P == "":
             return True
         else:
             win.bell()  # Error sound
@@ -183,69 +187,47 @@ def settings():
     # Widgets
     spinput = win.register(validate_numbers)
     spin_minutes = Spinbox(
-            win,  # Window element is assigned to
-            validate="key",  # Validate on key press
-            validatecommand=(spinput, "%P", "%s"),  # Execute this command to validate
-            from_=0,  # Minimum value when using arrows
-            to=59,  # Maximum value when using arrows
-            textvariable=minute_value,  # Set initial value
-            bg="black",  # Background colour
-            relief="flat",  # Border design
-            fg="white",  # Text colour
-            bd=1,  # Border width in pixels
-            width=3,  # Width of spinbox entry in characters
-            font=my_font2,  # Font for text
-            justify="center"  # Alignment of text in element
-        )
+        win,  # Window element is assigned to
+        validate="key",  # Validate on key press
+        validatecommand=(spinput, "%P", "%s"),  # Execute this command to validate
+        from_=0,  # Minimum value when using arrows
+        to=59,  # Maximum value when using arrows
+        textvariable=minute_value,  # Set initial value
+        bg="black",  # Background colour
+        relief="flat",  # Border design
+        fg="white",  # Text colour
+        bd=1,  # Border width in pixels
+        width=3,  # Width of spinbox entry in characters
+        font=my_font2,  # Font for text
+        justify="center",  # Alignment of text in element
+    )
     spin_minutes.grid(row=0, column=0, padx=10, pady=10)  # Layout in window
 
     spin_seconds = Spinbox(
-            win,
-            validate="key",
-            validatecommand=(spinput, "%P", "%s"),
-            from_=0,
-            to=59,
-            textvariable=second_value,
-            bg="black",
-            relief="flat",
-            fg="white",
-            bd=1,
-            width=3,
-            font=my_font2,
-            justify="center"
-        )
+        win,
+        validate="key",
+        validatecommand=(spinput, "%P", "%s"),
+        from_=0,
+        to=59,
+        textvariable=second_value,
+        bg="black",
+        relief="flat",
+        fg="white",
+        bd=1,
+        width=3,
+        font=my_font2,
+        justify="center",
+    )
     spin_seconds.grid(row=0, column=1, padx=10, pady=10)
 
     win.save_button = Button(
-            win,
-            text="Save",
-            command=save,
-            font=my_font1,
-            bg="black",
-            relief="flat",
-            fg="white",
-            bd=1,
-            width=5,
-            justify="center",
-            padx=5,
-            pady=5
-        )
+        win, text="Save", command=save, font=my_font1, bg="black", relief="flat", fg="white", bd=1, width=5, justify="center", padx=5, pady=5
+    )
     win.save_button.grid(row=1, column=0, padx=10, pady=10)
 
     win.close_button = Button(
-            win,
-            text="Close",
-            command=close,
-            font=my_font1,
-            bg="black",
-            relief="flat",
-            fg="white",
-            bd=1,
-            width=5,
-            justify="center",
-            padx=5,
-            pady=5
-        )
+        win, text="Close", command=close, font=my_font1, bg="black", relief="flat", fg="white", bd=1, width=5, justify="center", padx=5, pady=5
+    )
     win.close_button.grid(row=1, column=1, padx=10, pady=10)
 
     win.mainloop()
@@ -254,24 +236,17 @@ def settings():
 # Create main display
 root = Tk()
 root.attributes("-fullscreen", True)
-root.configure(background='black')
+root.configure(background="black")
 # root.config(cursor="none")  # Hide the mouse cursor
-root.bind('<x>', quit_all)
-root.bind('<F1>', go_stop)
-root.bind('<F2>', reset)
-root.bind('<F3>', alarm)
-root.bind('<Button-3>', popup)
-
-
-# # Initialise the alarm sound
-# pygame.mixer.pre_init(44100, -16, 2, 2048)
-# pygame.mixer.init()
-# pygame.mixer.music.load("tng_red_alert3.mp3")
-# pygame.mixer.music.set_volume(10.0)
+root.bind("<x>", quit_all)
+root.bind("<F1>", go_stop)
+root.bind("<F2>", reset)
+root.bind("<F3>", alarm)
+root.bind("<Button-3>", popup)
 
 
 # Set up counter display
-fnt = font.Font(family='Helvetica', size=300, weight='bold')
+fnt = font.Font(family="Helvetica", size=300, weight="bold")
 txt = StringVar()
 lbl = ttk.Label(root, textvariable=txt, font=fnt, foreground="white", background="black")
 txt.set(iTotal)

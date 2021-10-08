@@ -1,7 +1,3 @@
-#!/usr/bin/python3
-
-# TODO: add my details and docstrings etc
-
 # Import modules
 from tkinter import font, ttk
 import tkinter as tk
@@ -9,7 +5,8 @@ import pygame
 import configparser
 import os
 import sys
-import time
+
+# TODO: add my details and docstrings etc
 
 # Constant reference to file including path
 SETTINGS_FILE = os.path.join(sys.path[0], "settings.ini")
@@ -56,6 +53,12 @@ class Timer(tk.Frame):
         self.menu.add_command(label="Exit", accelerator="X", command=self.quit_all, font="Helvetica 16 bold")
         self.menu_pop.add_cascade(label="File", menu=self.menu)
 
+        # Initialise the alarm sound
+        pygame.mixer.pre_init(44100, -16, 2, 2048)
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(10.0)
+        self.alert = pygame.mixer.Sound("alert.wav")
+
     def go_stop(self, *args):
         if self.working == 1:
             self.working = 0
@@ -79,6 +82,7 @@ class Timer(tk.Frame):
             if self.wMin == 0 and self.wSec == 0:
                 self.txt.set("00:00")
                 self.flash()
+                self.alarm()
             else:
                 self.txt.set("%02d:%02d" % (self.wMin, self.wSec))
                 if self.wSec == 0:
@@ -91,7 +95,7 @@ class Timer(tk.Frame):
             return
 
     def alarm(self):
-        pygame.mixer.music.play()
+        self.alert.play()
 
     def flash(self):
         if self.working == 1:
