@@ -16,7 +16,8 @@
 <h3 align="center">Countdown Timer</h3>
 
   <p align="center">
-    This is a countdown timer created in Python using Tkinter. It will run full screen on execution and display large numbers on a black background.
+    This is a countdown timer created in Python using Tkinter. <br />
+    It will run full screen on execution and display large numbers on a black background.
     <!-- <br />
     <a href="https://github.com/fo3cus/countdown_timer"><strong>Explore the docs »</strong></a> -->
     <br />
@@ -79,8 +80,6 @@ To get a local copy up and running follow these simple example steps.
 
 All instructions are based on Ubuntu 20.04.
 
-<br />
-
 ### Prerequisites
 
 Step 1 — Setting Up Python 3
@@ -130,8 +129,6 @@ Also install the tkinter requirement to the system.
 ```sh
 sudo apt install -y python3-tk
 ```
-
-<br />
 
 ### Installation
 
