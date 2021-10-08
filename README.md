@@ -165,8 +165,8 @@ python3 timer4.py
 
 - [x] Create requirements.txt
 - [x] Update this README
-- [] Replace alert sound
-- [] Cleanup unnecessary files
+- [x] Replace alert sound
+- [x] Cleanup unnecessary files
 - [] Document/comment the code
 
 See the [open issues](https://github.com/fo3cus/countdown_timer/issues) for a full list of proposed features (and known issues).
