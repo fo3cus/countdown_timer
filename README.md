@@ -17,12 +17,12 @@
 
   <p align="center">
     This is a countdown timer created in Python using Tkinter. It will run full screen on execution and display large numbers on a black background.
+    <!-- <br />
+    <a href="https://github.com/fo3cus/countdown_timer"><strong>Explore the docs »</strong></a> -->
     <br />
-    <a href="https://github.com/fo3cus/countdown_timer"><strong>Explore the docs »</strong></a>
     <br />
-    <br />
-    <a href="https://github.com/fo3cus/countdown_timer">View Demo</a>
-    ·
+    <!-- <a href="https://github.com/fo3cus/countdown_timer">View Demo</a>
+    · -->
     <a href="https://github.com/fo3cus/countdown_timer/issues">Report Bug</a>
     ·
     <a href="https://github.com/fo3cus/countdown_timer/issues">Request Feature</a>
