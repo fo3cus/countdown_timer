@@ -10,7 +10,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/fo3cus/countdown_timer">
-    <img src="https://github.com/fo3cus/fo3cus.github.io/blob/main/images/avatar.png" alt="Logo" width="80" height="80">
+    <img src="logo.png" alt="Logo" width="216" height="124">
   </a>
 
 <h3 align="center">Countdown Timer</h3>
