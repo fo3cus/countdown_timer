@@ -1,27 +1,20 @@
-#!/usr/bin/python3
-
-# TODO: add my details and docstrings etc
-
-# Import modules
 from tkinter import Tk, font, ttk, StringVar, Menu, Toplevel, Spinbox, Button
 import pygame
 import configparser
 import os
 import sys
-import time
 
 
-# Constant reference to file including path
+# * Constant reference to file including path
 SETTINGS_FILE = os.path.join(sys.path[0], "settings.ini")
 
 
-# Load the file into config object
+# * Load the file into config object
 config = configparser.ConfigParser()
 config.read(SETTINGS_FILE)
 
 
-# TODO: this could be a class?
-# Define variables
+# * Define variables
 iMin = int(config["SETTINGS"]["minutes"])
 iSec = int(config["SETTINGS"]["seconds"])
 iTotal = str(f"{iMin:02}") + ":" + str(f"{iSec:02}")  # Format loaded numbers with leading zeroes
@@ -29,14 +22,14 @@ wMin = iMin
 wSec = iSec
 working = 0
 
-# Initialise the alarm sound
+# * Initialise the alarm sound
 pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.mixer.init()
 pygame.mixer.music.set_volume(10.0)
-alert = pygame.mixer.Sound("alert.wav")
+alert = pygame.mixer.Sound("assets/alert.wav")
 
 
-# Start/stop timer
+# * Start/stop timer
 def go_stop(*args):
     global working
 
@@ -47,9 +40,8 @@ def go_stop(*args):
         root.after(500, run_timer)  # Queue function to execute after 0.5 seconds
 
 
-# Reset timer and update display, only works if currently stopped
+# * Reset timer and update display, only works if currently stopped
 def reset(*args):
-    # Pull in global variables so they can be changed locally
     global wMin
     global wSec
     global working
@@ -63,14 +55,13 @@ def reset(*args):
         txt.set(iTotal)
 
 
-# Close all windows
+# * Close all windows
 def quit_all(*args):
     root.destroy()
 
 
-# Run main timer and update display
+# * Run main timer and update display
 def run_timer():
-    # Pull in global variables so they can be changed locally
     global wMin
     global wSec
     global working
@@ -92,12 +83,12 @@ def run_timer():
         return
 
 
-# Play the alarm sound
+# * Play the alarm sound
 def alarm():
     alert.play()
 
 
-# Flash displayed numbers
+# * Flash displayed numbers
 def flash():
     if working == 1:
         current_colour = str(lbl.cget("foreground"))
@@ -112,13 +103,12 @@ def flash():
         return
 
 
-# Popup menu on right-click
+# * Popup menu on right-click
 def popup(event):
     menu.tk_popup(event.x_root, event.y_root)
 
 
-# TODO: this could be a class?
-# Configure settings window
+# * Configure settings window
 def settings():
     global working
 
@@ -134,12 +124,12 @@ def settings():
     cfg = configparser.ConfigParser()
     cfg.read(SETTINGS_FILE)
 
-    # Variables
     minute_value = StringVar(win)
     minute_value.set(cfg["SETTINGS"]["minutes"])
     second_value = StringVar(win)
     second_value.set(cfg["SETTINGS"]["seconds"])
 
+    # * Commit settings to file
     def save():
         global iMin
         global iSec
@@ -167,12 +157,12 @@ def settings():
 
         reset()
 
+    # * Close the GUI
     def close():
-        win.destroy()  # Close the GUI
+        win.destroy()
 
-    # Validate input and disallow anything but numbers and empty
+    # * Validate input and disallow anything but numbers and empty
     def validate_numbers(P, s):
-        # print(P)  # Used for debugging
         if P.isdigit():  # Does the string evaluate to a number?
             if int(P) > 59:  # Is the number greater than 59
                 win.bell()
@@ -184,7 +174,7 @@ def settings():
             win.bell()  # Error sound
             return False
 
-    # Widgets
+    # * Widgets
     spinput = win.register(validate_numbers)
     spin_minutes = Spinbox(
         win,  # Window element is assigned to
@@ -233,11 +223,10 @@ def settings():
     win.mainloop()
 
 
-# Create main display
+# * Create main display
 root = Tk()
 root.attributes("-fullscreen", True)
 root.configure(background="black")
-# root.config(cursor="none")  # Hide the mouse cursor
 root.bind("<x>", quit_all)
 root.bind("<F1>", go_stop)
 root.bind("<F2>", reset)
@@ -245,7 +234,7 @@ root.bind("<F3>", alarm)
 root.bind("<Button-3>", popup)
 
 
-# Set up counter display
+# * Set up counter display
 fnt = font.Font(family="Helvetica", size=300, weight="bold")
 txt = StringVar()
 lbl = ttk.Label(root, textvariable=txt, font=fnt, foreground="white", background="black")
@@ -253,7 +242,7 @@ txt.set(iTotal)
 lbl.place(relx=0.5, rely=0.5, anchor="center")
 
 
-# Menu
+# * Menu
 menu_pop = Menu(root)
 menu = Menu(menu_pop, tearoff=0)
 menu.config(bg="black", fg="white", relief="raised")
@@ -266,5 +255,5 @@ menu.add_command(label="Exit", accelerator="X", command=quit_all)
 menu_pop.add_cascade(label="File", menu=menu)
 
 
-# Start main loop
+# * Start main loop
 root.mainloop()
