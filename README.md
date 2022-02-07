@@ -18,12 +18,8 @@
   <p align="center">
     This is a countdown timer created in Python using Tkinter. <br />
     It will run full screen on execution and display large numbers on a black background.
-    <!-- <br />
-    <a href="https://github.com/fo3cus/countdown_timer"><strong>Explore the docs »</strong></a> -->
     <br />
     <br />
-    <!-- <a href="https://github.com/fo3cus/countdown_timer">View Demo</a>
-    · -->
     <a href="https://github.com/fo3cus/countdown_timer/issues">Report Bug</a>
     ·
     <a href="https://github.com/fo3cus/countdown_timer/issues">Request Feature</a>
@@ -58,7 +54,7 @@
 
 ## About The Project
 
-[![Countdown Timer Screen Shot][product-screenshot]](https://github.com/fo3cus/fo3cus.github.io/blob/main/images/thumbs/01.png)
+![Countdown Timer Screen Shot][product-screenshot]
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -189,8 +185,6 @@ Project Link: [https://github.com/fo3cus/countdown_timer](https://github.com/fo3
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
@@ -204,4 +198,4 @@ Project Link: [https://github.com/fo3cus/countdown_timer](https://github.com/fo3
 [issues-url]: https://github.com/fo3cus/countdown_timer/issues
 [license-shield]: https://img.shields.io/github/license/fo3cus/countdown_timer.svg?style=for-the-badge
 [license-url]: https://github.com/fo3cus/countdown_timer/blob/main/LICENSE.txt
-[product-screenshot]: https://github.com/fo3cus/fo3cus.github.io/blob/main/images/thumbs/01.png
+[product-screenshot]: assets/screenshot.png
